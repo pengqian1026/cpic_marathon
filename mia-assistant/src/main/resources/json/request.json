@@ -19,7 +19,7 @@
       "message": {
         "text": [{
           "role": "user",
-          "content": "你是一个医保稽核专家,问题{quetion}"
+          "content": "你是一个医保稽核专家,请回答以下问题{quetion},不要做过多答复"
         }
         ]
       }

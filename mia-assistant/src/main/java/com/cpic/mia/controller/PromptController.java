@@ -24,4 +24,5 @@ public class PromptController {
         res.setData(result);
         return res;
     }
+
 }
