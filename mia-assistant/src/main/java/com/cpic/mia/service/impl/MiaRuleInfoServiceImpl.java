@@ -1,0 +1,18 @@
+package com.cpic.mia.service.impl;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cpic.mia.domain.MiaRuleInfoPO;
+import com.cpic.mia.service.MiaRuleInfoService;
+import com.cpic.mia.mapper.MiaRuleInfoMapper;
+import org.springframework.stereotype.Service;
+
+/**
+* @author pengqian-012
+* @description 针对表【mia_rule_info(稽核规则信息表)】的数据库操作Service实现
+* @createDate 2024-05-26 16:59:26
+*/
+@Service
+public class MiaRuleInfoServiceImpl extends ServiceImpl<MiaRuleInfoMapper, MiaRuleInfoPO>
+implements MiaRuleInfoService{
+
+}

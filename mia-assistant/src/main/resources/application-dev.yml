@@ -1,0 +1,25 @@
+server:
+  port: 31001
+spring:
+  application:
+    name: T134511679.admin.mia
+  # ???????
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: custapp
+    password: ENC(309Gm8K+bt+Ev9iSO1KKonHyctRyFi9t2IQbTSMxFMQ=)
+    url: jdbc:mysql://29.24.18.13:16063/coredb_tst?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  configuration:
+    jdbc-type-for-null: null
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    vfs-impl: com.baomidou.mybatisplus.autoconfigure.SpringBootVFS
+    call-setters-on-nulls: true
+big-model:
+  url: http://p001-gp18aibsm-sit.group.cpic.com/chatgpt/chatgpt/funcChat/gptAnswer
+  app-token: 816a9d849e9f40feb0396523a3f4c933
+
+
