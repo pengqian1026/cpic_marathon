@@ -1,6 +1,6 @@
 package com.cpic.mia.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cpic.mia.domain.MiaHistoryInfoPO;
 import com.cpic.mia.service.MiaHistoryInfoService;
 import com.cpic.mia.mapper.MiaHistoryInfoMapper;

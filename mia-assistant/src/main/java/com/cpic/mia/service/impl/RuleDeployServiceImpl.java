@@ -33,10 +33,10 @@ public class RuleDeployServiceImpl implements RuleDeployService {
     public AnalysisDataVO executeRule(MiaQuery miaQuery) {
         List<MiaErrData> targetRecords = miaMapper.select(miaQuery);
 
-        String ruleCOde = StdCodeUtil.generateCode();
+        String ruleCode = StdCodeUtil.generateCode();
         if(!CollectionUtils.isEmpty(targetRecords)){
             MiaRuleInfoPO miaRuleInfoPO = new MiaRuleInfoPO();
-            miaRuleInfoPO.setRuleCode(ruleCOde);
+            miaRuleInfoPO.setRuleCode(ruleCode);
             miaRuleInfoPO.setRuleName("测试");
             miaRuleInfoPO.setRuleType(miaQuery.getRule());
             miaRuleInfoPO.setHospitalId("hospitalId");
@@ -47,10 +47,9 @@ public class RuleDeployServiceImpl implements RuleDeployService {
             miaRuleInfoMapper.insert(miaRuleInfoPO);
         }
 
-
         AnalysisDataVO analysisDataVO = new AnalysisDataVO();
         analysisDataVO.setMiaErrDatas(targetRecords);
-        analysisDataVO.setRuleId();
-        return targetRecords;
+        analysisDataVO.setRuleId(ruleCode);
+        return analysisDataVO;
     }
 }

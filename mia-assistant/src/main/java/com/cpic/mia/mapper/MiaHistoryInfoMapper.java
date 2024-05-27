@@ -1,7 +1,7 @@
 package com.cpic.mia.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cpic.mia.domain.MiaHistoryInfoPO;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 
 /**
 * @author pengqian-012

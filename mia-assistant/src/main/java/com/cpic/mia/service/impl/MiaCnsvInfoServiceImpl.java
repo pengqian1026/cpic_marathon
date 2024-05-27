@@ -1,9 +1,12 @@
 package com.cpic.mia.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cpic.mia.domain.AnalysisDataVO;
 import com.cpic.mia.domain.MiaCnsvInfoPO;
+import com.cpic.mia.domain.request.MiaPromptRequest;
 import com.cpic.mia.service.MiaCnsvInfoService;
 import com.cpic.mia.mapper.MiaCnsvInfoMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,4 +18,11 @@ import org.springframework.stereotype.Service;
 public class MiaCnsvInfoServiceImpl extends ServiceImpl<MiaCnsvInfoMapper, MiaCnsvInfoPO>
 implements MiaCnsvInfoService{
 
+    @Autowired
+    MiaCnsvInfoMapper miaCnsvInfoMapper;
+
+    @Override
+    public void saveCnsvInfo(MiaPromptRequest request, AnalysisDataVO analysisDataVO) {
+
+    }
 }

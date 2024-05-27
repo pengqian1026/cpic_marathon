@@ -1,7 +1,8 @@
 package com.cpic.mia.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cpic.mia.domain.MiaHistoryInfoPO;
-import com.baomidou.mybatisplus.service.IService;
+
 
 /**
 * @author pengqian-012
