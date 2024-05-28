@@ -5,7 +5,7 @@
 <mapper namespace="com.cpic.mia.mapper.MiaHistoryInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.cpic.mia.domain.MiaHistoryInfoPO">
-            <id property="hisId" column="his_id" jdbcType="VARCHAR"/>
+            <id property="his_id" column="his_id" jdbcType="VARCHAR"/>
             <result property="patientId" column="patient_id" jdbcType="VARCHAR"/>
             <result property="zyh" column="zyh" jdbcType="VARCHAR"/>
             <result property="pCategory" column="p_category" jdbcType="VARCHAR"/>
@@ -28,4 +28,81 @@
         drug_spec,package_unit,unit_price,
         num,cost_sum
     </sql>
+
+    <select id="getErrDataByRule" resultType="com.cpic.mia.domain.MiaHistoryInfoPO">
+        select
+        t1.his_id,
+        t1.patient_id,
+        t1.zyh,
+        t1.p_category,
+        t1.usage_date,
+        t1.dept_id,
+        t1.dept_name,
+        t1.item_id_hosp,
+        t1.item_name_hosp,
+        t1.drug_spec,
+        t1.package_unit,
+        t1.unit_price,
+        t1.num,
+        t1.cost_sum
+        from
+        mia_history_info t1
+        where 1=1
+        <choose>
+            <!--重复收费-->
+            <when test="rule==1">
+                and exists (
+                select
+                1
+                from mia_history_info t2
+                where t1.his_id = t2.his_id
+                <if test="scope==1">
+                    and t1.usage_date = t2.usage_date
+                </if>
+                and item_name_hosp =#{itemNameHosp1})
+                and exists (
+                select
+                1
+                from  mia_history_info t3
+                where  t1.his_id = t3.his_id
+                <if test="scope==1">
+                    and t1.usage_date = t3.usage_date
+                </if>
+                and item_name_hosp =#{itemNameHosp2})
+                and (item_name_hosp =#{itemNameHosp1}
+                or item_name_hosp =#{itemNameHosp2})
+            </when>
+            <!--超标收费-->
+            <when test="rule==2">
+                and exists (
+                select
+                1
+                from (select
+                his_id
+                <if test="scope==1">
+                    ,usage_date
+                </if>
+                from mia_history_info
+                where item_name_hosp =#{itemNameHosp1}
+                group by
+                his_id
+                <if test="scope==1">
+                    ,usage_date
+                </if>
+                having sum(num)>${num}) t2
+                where t1.his_id = t2.his_id
+                <if test="scope==1">
+                    and t1.usage_date = t2.usage_date
+                </if>)
+                and item_name_hosp =#{itemNameHosp1}
+            </when>
+            <!--串换收费-->
+            <when test="rule==3">
+                and item_name_hosp=#{itemNameHosp1}
+            </when>
+        </choose>
+        order by
+        his_id,
+        item_name_hosp
+    </select>
 </mapper>

@@ -22,7 +22,9 @@ public enum RestResponseCode {
     FILE_DOWN_ERROR(701,"文件下载错误"),
     FILE_EXPORT_ERROR(702,"文件导入错误"),
     FILE_DELETE_ERROR(703,"文件删除错误"),
-    LN_NO_AUDIT(8001,"上游节点未审核");
+    LN_NO_AUDIT(8001,"上游节点未审核"),
+    NOT_RELATIED(9999,"内容与医保稽核无关"),
+    ;
     int code;
     String msg;
 

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.sql.Timestamp;
+
 import lombok.Data;
 
 /**
@@ -18,7 +20,7 @@ public class MiaRuleInfoPO implements Serializable {
      * 主键id
      */
     @TableId
-    private String keyId;
+    private Long keyId;
 
     /**
      * 医院id
@@ -59,6 +61,11 @@ public class MiaRuleInfoPO implements Serializable {
      * 项目数量/次数
      */
     private Long num;
+
+    /**
+     * 创建时间
+     */
+    private Timestamp createTm;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

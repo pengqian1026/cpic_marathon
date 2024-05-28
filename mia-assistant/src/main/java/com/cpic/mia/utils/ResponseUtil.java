@@ -15,6 +15,15 @@ public class ResponseUtil {
         CommonResult.setMessage(str);
         return CommonResult;
     }
+
+    public static CommonResult success(int code,String msg) {
+        CommonResult CommonResult = new CommonResult();
+        CommonResult.setCode(code);
+        CommonResult.setSuccess(true);
+        CommonResult.setMessage(msg);
+        return CommonResult;
+    }
+
     public static CommonResult success() {
         CommonResult CommonResult = new CommonResult();
         CommonResult.setCode(RestResponseCode.SUCCESS.getCode());
@@ -22,6 +31,8 @@ public class ResponseUtil {
         CommonResult.setMessage(RestResponseCode.SUCCESS.getMsg());
         return CommonResult;
     }
+
+
     public static CommonResult success(String msg) {
         CommonResult res = success();
         res.setMessage(msg);

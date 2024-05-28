@@ -18,7 +18,7 @@ public class MiaHistoryInfoPO implements Serializable {
      * 历史记录id
      */
     @TableId
-    private String hisId;
+    private String his_id;
 
     /**
      * 病人id

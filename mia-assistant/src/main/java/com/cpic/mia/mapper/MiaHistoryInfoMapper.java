@@ -2,6 +2,9 @@ package com.cpic.mia.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cpic.mia.domain.MiaHistoryInfoPO;
+import com.cpic.mia.domain.MiaQuery;
+
+import java.util.List;
 
 /**
 * @author pengqian-012
@@ -11,5 +14,6 @@ import com.cpic.mia.domain.MiaHistoryInfoPO;
 */
 public interface MiaHistoryInfoMapper extends BaseMapper<MiaHistoryInfoPO> {
 
+    List<MiaHistoryInfoPO> getErrDataByRule(MiaQuery miaQuery);
 
 }

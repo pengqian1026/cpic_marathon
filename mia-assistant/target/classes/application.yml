@@ -1,37 +1,30 @@
 server:
   port: 31001
+  compression:
+    enabled: true
+    mime-types: application/javascript
+jasypt:
+  encryptor:
+    # 盐值
+    password: PBEWITHMD5ANDDES
+    # 指定加密方式
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
 spring:
   application:
     name: T134511679.admin.mia
   # ???????
+  web:
+    resources:
+      static-locations: classpath:static/
   autoconfigure:
     exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    dynamic:
-      primary: hologres
-      datasource:
-        hologres:
-          driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://29.118.24.171:80/cdm_gp_dev?currentSchema=public&ApplicationName=east
-          username: TMPXNED5pB46Gk6G
-          password: mHCu9zzA3guX5RM7UoEnt24unFf2cE
-          druid:
-            socket-timeout: 300000
-            connect-timeout: 300000
-            initial-size: 5 # ????????????????0
-            max-active: 20 # ??????????8
-            min-idle: 10 # ???????
-            keep-alive: true
-            max-wait: 60000 # ?????????????????
-            time-between-eviction-runs-millis: 2000  # ????????????????????????????
-            min-evictable-idle-time-millis: 600000  # ??????????????????????
-            max-evictable-idle-time-millis: 900000  # ??????????????????????
-            validation-query: select 1
-            test-while-idle: true # ???true???????????????testOnBorrow?false??????????????????????????????????????true
-            test-on-borrow: false # ????????validationQuery????????,???????,???true
-            test-on-return: false # ????????validationQuery????????,???????,???true
-
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: custapp
+    ##password: ENC(309Gm8K+bt+Ev9iSO1KKonHyctRyFi9t2IQbTSMxFMQ=)
+    password: Ce_Sh1%Pa2s_obdb
+    url: jdbc:mysql://29.24.18.13:16063/coredb_dev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*Mapper.xml
   configuration:
@@ -42,5 +35,10 @@ mybatis-plus:
 big-model:
   url: http://p001-gp18aibsm-sit.group.cpic.com/chatgpt/chatgpt/funcChat/gptAnswer
   app-token: 816a9d849e9f40feb0396523a3f4c933
+  72b-bck:
+    url: http://api-gp18aibsm-sit.group.cpic.com/openAPI/route/gateway
+    longAppToken: XLUCAUY3KIDAEFGDAWIJGEMJSKOYM8XA
+    serviceId: Cpic.All.Service.Ai.chat.completions
 
-
+sm4:
+  key: "!QAZ2wsx#EDC4rfv"

@@ -5,13 +5,14 @@
 <mapper namespace="com.cpic.mia.mapper.MiaCnsvInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.cpic.mia.domain.MiaCnsvInfoPO">
-            <id property="keyId" column="key_id" jdbcType="VARCHAR"/>
+            <id property="keyId" column="key_id" jdbcType="BIGINT"/>
             <result property="cnsvId" column="cnsv_id" jdbcType="VARCHAR"/>
             <result property="cnsvSeqNo" column="cnsv_seq_no" jdbcType="INTEGER"/>
             <result property="role" column="role" jdbcType="VARCHAR"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="question" column="question" jdbcType="VARCHAR"/>
             <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="createTm" column="create_tm" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -19,4 +20,11 @@
         role,content,question,
         answer
     </sql>
+
+    <select id="getHistoryCnsv" resultType="com.cpic.mia.domain.MiaCnsvInfoPO">
+        select *
+        from mia_cnsv_info
+        where cnsv_id = #{cnsvId}
+        order by create_tm
+    </select>
 </mapper>

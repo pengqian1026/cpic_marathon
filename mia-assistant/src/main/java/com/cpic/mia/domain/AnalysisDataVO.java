@@ -14,7 +14,6 @@ import java.util.List;
 public class AnalysisDataVO {
     private String cnsvId;
     private String ruleId;
-    private List<MiaErrData> miaErrDatas;
+    private List<MiaHistoryInfoPO> miaErrDatas;
     private Double cost_sum;
-
 }

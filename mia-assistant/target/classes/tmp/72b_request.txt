@@ -1,0 +1,1 @@
+{"model": "qwen1p5_72b", "stream": false, "messages": #messagesText#, "max_tokens": 1024 }

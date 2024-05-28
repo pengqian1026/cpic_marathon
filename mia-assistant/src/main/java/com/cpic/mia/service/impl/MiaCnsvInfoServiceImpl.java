@@ -1,8 +1,10 @@
 package com.cpic.mia.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cpic.mia.domain.AnalysisDataVO;
 import com.cpic.mia.domain.MiaCnsvInfoPO;
+import com.cpic.mia.domain.request.ChatOutRequst;
 import com.cpic.mia.domain.request.MiaPromptRequest;
 import com.cpic.mia.service.MiaCnsvInfoService;
 import com.cpic.mia.mapper.MiaCnsvInfoMapper;
@@ -19,10 +21,28 @@ public class MiaCnsvInfoServiceImpl extends ServiceImpl<MiaCnsvInfoMapper, MiaCn
 implements MiaCnsvInfoService{
 
     @Autowired
-    MiaCnsvInfoMapper miaCnsvInfoMapper;
+    private MiaCnsvInfoMapper miaCnsvInfoMapper;
 
     @Override
-    public void saveCnsvInfo(MiaPromptRequest request, AnalysisDataVO analysisDataVO) {
+    public void saveUserCnsvInfo(MiaPromptRequest miaPromptRequest, ChatOutRequst result, Object content) {
+        //存request
+        MiaCnsvInfoPO request = new MiaCnsvInfoPO();
+        request.setCnsvId(miaPromptRequest.getCnvsId());
+        request.setCnsvSeqNo(1);
+        request.setRole("user");
+        request.setQuestion(miaPromptRequest.getQuestion());
+        request.setAnswer(result.getRequestData());
+        request.setContent(content.toString());
+        miaCnsvInfoMapper.insert(request);
+        //存answer
+        MiaCnsvInfoPO answer = new MiaCnsvInfoPO();
+        answer.setCnsvId(miaPromptRequest.getCnvsId());
+        answer.setCnsvSeqNo(2);
+        answer.setRole("assistant");
+        answer.setQuestion(miaPromptRequest.getQuestion());
+        answer.setAnswer(result.getRequestData());
+        answer.setContent(content.toString());
+        miaCnsvInfoMapper.insert(answer);
 
     }
 }

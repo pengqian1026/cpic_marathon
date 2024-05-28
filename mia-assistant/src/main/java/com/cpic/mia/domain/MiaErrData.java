@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class MiaErrData {
-    public String hisId;
+    public String his_id;
     public String patientId;
     public String zyh;
     public String pCategory;

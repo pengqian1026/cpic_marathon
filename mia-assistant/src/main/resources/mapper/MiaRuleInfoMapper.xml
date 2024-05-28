@@ -5,7 +5,7 @@
 <mapper namespace="com.cpic.mia.mapper.MiaRuleInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.cpic.mia.domain.MiaRuleInfoPO">
-            <id property="keyId" column="key_id" jdbcType="VARCHAR"/>
+            <id property="keyId" column="key_id" jdbcType="BIGINT"/>
             <result property="hospitalId" column="hospital_id" jdbcType="VARCHAR"/>
             <result property="ruleCode" column="rule_code" jdbcType="VARCHAR"/>
             <result property="ruleName" column="rule_name" jdbcType="VARCHAR"/>
@@ -14,6 +14,7 @@
             <result property="itemnamehosp1" column="itemNameHosp1" jdbcType="VARCHAR"/>
             <result property="itemnamehosp2" column="itemNameHosp2" jdbcType="VARCHAR"/>
             <result property="num" column="num" jdbcType="BIGINT"/>
+            <result property="createTm" column="create_tm" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -21,5 +22,12 @@
         rule_name,rule_type,scope,
         itemNameHosp1,itemNameHosp2,num
     </sql>
+
+    <select id="getRuleInfoByName">
+        select
+        *
+        from mia_rule_info
+        where rule_name like CONCAT('%',#{ruleName},'%');
+    </select>
 
 </mapper>

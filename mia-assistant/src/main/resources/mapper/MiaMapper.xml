@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cpic.mia.mapper.MiaMapper">
     <resultMap id="mia" type="com.cpic.mia.domain.MiaErrData">
-        <result column="hisid" property="hisId"/>
+        <result column="his_id" property="his_id"/>
         <result column="patient_id" property="patientId"/>
         <result column="zyh" property="zyh"/>
         <result column="p_category" property="pCategory"/>
@@ -17,81 +17,80 @@
         <result column="num" property="num"/>
         <result column="cost_sum" property="costSum"/>
     </resultMap>
-
     <select id="select" resultMap="mia">
         select
-            t1.hisid,
-            t1.patient_id,
-            t1.zyh,
-            t1.p_category,
-            t1.usage_date,
-            t1.dept_id,
-            t1.dept_name,
-            t1.item_id_hosp,
-            t1.item_name_hosp,
-            t1.drug_spec,
-            t1.package_unit,
-            t1.unit_price,
-            t1.num,
-            t1.cost_sum
+        t1.his_id,
+        t1.patient_id,
+        t1.zyh,
+        t1.p_category,
+        t1.usage_date,
+        t1.dept_id,
+        t1.dept_name,
+        t1.item_id_hosp,
+        t1.item_name_hosp,
+        t1.drug_spec,
+        t1.package_unit,
+        t1.unit_price,
+        t1.num,
+        t1.cost_sum
         from
-            t_mia_his_info t1
+        mia_history_info t1
         where 1=1
-          <choose>
-              <!--重复收费-->
-              <when test="rule=='1'">
-                  and exists (
-                             select
-                             1
-                             from t_mia_his_info t2
-                             where t1.hisid = t2.hisid
-                             <if test="scope=='1'">
-                                 and t1.usage_date = t2.usage_date
-                             </if>
-                             and item_name_hosp =#{itemNameHosp1})
-                  and exists (
-                             select
-                             1
-                             from select t_mia_his_info t3
-                             where  t1.hisid = t3.hisid
-                             <if test="scope=='1'">
-                                 and t1.usage_date = t3.usage_date
-                             </if>
-                             and item_name_hosp =#{itemNameHosp2})
-                  and (item_name_hosp =#{itemNameHosp1}
-                  or item_name_hosp =#{itemNameHosp2})
-              </when>
-              <!--超标收费-->
-              <when test="rule=='2'">
-                  and exists (
-                  select
-                  1
-                  from (select
-                            hisid
-                            <if test="scope=='1'">
+        <choose>
+            <!--重复收费-->
+            <when test="rule==1">
+                and exists (
+                select
+                1
+                from mia_history_info t2
+                where t1.his_id = t2.his_id
+                <if test="scope==1">
+                    and t1.usage_date = t2.usage_date
+                </if>
+                and item_name_hosp =#{itemNameHosp1})
+                and exists (
+                select
+                1
+                from  mia_history_info t3
+                where  t1.his_id = t3.his_id
+                <if test="scope==1">
+                    and t1.usage_date = t3.usage_date
+                </if>
+                and item_name_hosp =#{itemNameHosp2})
+                and (item_name_hosp =#{itemNameHosp1}
+                or item_name_hosp =#{itemNameHosp2})
+            </when>
+            <!--超标收费-->
+            <when test="rule==2">
+                and exists (
+                            select
+                            1
+                            from (select
+                            his_id
+                            <if test="scope==1">
                                 ,usage_date
                             </if>
-                        from t_mia_his_info
-                        where item_name_hosp =#{itemNameHosp1}
-                        group by
-                            hisid
-                            <if test="scope=='1'">
+                            from mia_history_info
+                            where item_name_hosp =#{itemNameHosp1}
+                            group by
+                            his_id
+                            <if test="scope==1">
                                 ,usage_date
                             </if>
-                        having count(*)>${num}) t2
-                  where t1.hisid = t2.hisid
-                  <if test="scope=='1'">
-                      and t1.usage_date = t2.usage_date
-                  </if>)
-              <!--串换收费-->
-              </when>
-              <when test="rule=='3'">
-                  and item_name_hosp=#{itemNameHosp1}
-              </when>
-          </choose>
+                            having sum(num)>${num}) t2
+                            where t1.his_id = t2.his_id
+                            <if test="scope==1">
+                                and t1.usage_date = t2.usage_date
+                            </if>)
+                and item_name_hosp =#{itemNameHosp1}
+            </when>
+            <!--串换收费-->
+            <when test="rule==3">
+                and item_name_hosp=#{itemNameHosp1}
+            </when>
+        </choose>
         order by
-            hisid,
-            item_name_hosp
+        his_id,
+        item_name_hosp
     </select>
-
 </mapper>

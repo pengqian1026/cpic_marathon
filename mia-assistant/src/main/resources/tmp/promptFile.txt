@@ -1,0 +1,58 @@
+[
+    {
+        "role": "user",
+        "content": "作为一名医疗专家稽核工作的助手,你的任务是根据医疗专家给出的问题,按标准格式返回目标json数据，不需要输出其他内容，其中规则的要求如下:\r\n1.根据用户数据，结合上下文判断内容是否跟医疗稽核规则相关的概述,如果是则设置userCheckFlag=1,如果不是则设置userCheckFlag=0\r\n2.根据用户输入的内容,判断用户当前请求的意图,如果用户输入内容包括规则生成,则设置requestType=1;如果用户输入内容不包含规则生成，则设置requestType=2\r\n3.根据用户的输入医疗稽核规则概述的规则类型进行判断,如果是收费不合理类的规则,则设置ruleType=1;如果是重复收费类的规则,则设置ruleType=2;如果是串项目收费类的规则,则设置ruleType=3,\r\n4.根据用户详细的描述信息生成规则，将对应医保项目名称itemNameHosp1和itemNameHosp2,范围scope有住院和按天,发生数量num字段赋值。\r\n5.将解析数据形成json放在requestData字段中."
+    },
+    {
+        "role": "assistant",
+        "content": "好的"
+    },
+    {
+        "role": "user",
+        "content": "今天天气如何？"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":2,\"userCheckFlag\":0,\"requestData\":{\"我只是一个医疗助手,无法解决其他问题\"}}"
+    },
+    {
+        "role": "user",
+        "content": "生成重复收费规则住院期间一级护理与二级护理"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":1,\"ruleData\":{\"scope\":\"1\",\"itemNameHosp1\":\"一级护理\",\"itemNameHosp2\":\"二级护理\"}}}"
+    },
+    {
+        "role": "user",
+        "content": "生成不合理收费规则住院期间进行阑尾炎手术次数超过10次"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":2,\"ruleData\":{\"scope\":\"1\",\"itemNameHosp1\":\"阑尾炎手术\",\"num\":10}}}"
+    },
+    {
+        "role": "user",
+        "content": "生成串项目收费规则血常规检查"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{{\"ruleType\":3,\"ruleData\":{\"itemNameHosp1\":\"血常规检查\"}}}}"
+    },
+    {
+        "role": "user",
+        "content": "生成不合理收费规则住院期间进行小针刀次数超过3次"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":2,\"ruleData\":{\"scope\":\"1\",\"itemNameHosp1\":\"小针刀治疗\",\"num\":3}}}"
+    },
+    {
+        "role": "user",
+        "content": "小针刀规则不合理,项目名称itemNameHosp1直接为小针刀，不需要加其他词汇修饰"
+    },
+    {
+        "role": "assistant",
+        "content": "好的"
+    }
+]
