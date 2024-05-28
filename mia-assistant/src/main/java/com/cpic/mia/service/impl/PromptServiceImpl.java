@@ -1,6 +1,7 @@
 package com.cpic.mia.service.impl;
 
 import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cpic.mia.domain.MiaCnsvInfoPO;
@@ -10,6 +11,7 @@ import com.cpic.mia.mapper.MiaCnsvInfoMapper;
 import com.cpic.mia.service.MiaCnsvInfoService;
 import com.cpic.mia.service.PromptService;
 import com.cpic.mia.utils.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,8 +26,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 @Service
+@Slf4j
 public class PromptServiceImpl implements PromptService {
     @Value("${big-model.url}")
     private String url;
@@ -76,38 +80,7 @@ public class PromptServiceImpl implements PromptService {
         }
         bufferedReader.close();
 
-        // 解析响应结果，提取所需内容
-        Object content = JSONObject.parseObject(response.toString()).get("content");
-        Object payload = JSONObject.parseObject(content.toString()).get("payload");
-        Object choices = JSONObject.parseObject(payload.toString()).get("choices");
-        Object text = JSONObject.parseObject(choices.toString()).get("text");
-        JSONArray objects = JSONObject.parseArray(text.toString());
-        String result = null;
-        for (Object o : objects) {
-            String tmp = (String) JSONObject.parseObject(o.toString()).get("content");
-            result = tmp.replace("<ret>", "")
-                    .replace("<end>", "")
-                    .replace(" ", "");
-            System.out.println(result);
-        }
-
-        // 处理并返回结果
-        ChatOutRequst chatOutRequst = new ChatOutRequst();
-        try {
-            JSONObject rstJson = JSONObject.parseObject(result);
-            String requestType = rstJson.getString("requestType");
-            String userCheckFlag = rstJson.getString("userCheckFlag");
-            String requestData = rstJson.getString("requestData");
-            chatOutRequst.setRequestType(requestType);
-            chatOutRequst.setUserCheckFlag(userCheckFlag);
-            chatOutRequst.setRequestData(requestData);
-        } catch (Exception e) {
-            chatOutRequst.setRequestType(String.valueOf(3));
-            chatOutRequst.setUserCheckFlag(String.valueOf(0));
-            chatOutRequst.setRequestData(result);
-        } finally {
-            return chatOutRequst;
-        }
+        return extractDataFromResponse(response.toString());
     }
 
     /**
@@ -143,30 +116,59 @@ public class PromptServiceImpl implements PromptService {
         while ((inputLine = bufferedReader.readLine()) != null) {
             response.append(inputLine);
         }
-        bufferedReader.close();
-        // 提取回复内容
-        JSONArray choices = JSONObject.parseObject(response.toString()).getJSONArray("choices");
-        Object message = JSONObject.parseObject(choices.get(0).toString()).get("message");
-        Object content = JSONObject.parseObject(message.toString()).get("content");
-        System.out.println(content.toString());
 
+        return extractDataFromResponse(response.toString());
+    }
+
+    public ChatOutRequst extractDataFromResponse(String response) {
+        // 初始化ChatOutRequst对象
         ChatOutRequst chatOutRequst = new ChatOutRequst();
+
         try {
-            JSONObject rstJson = JSONObject.parseObject(content.toString());
-            String requestType = rstJson.getString("requestType");
-            String userCheckFlag = rstJson.getString("userCheckFlag");
-            String requestData = rstJson.getString("requestData");
+            // 验证并解析原始响应
+            JSONObject rootJson = JSON.parseObject(response);
+            JSONArray choices = rootJson.getJSONArray("choices");
+            if (choices.isEmpty()) {
+                log.warn("choices array is empty");
+                // 如果没有选择项，设置默认值并返回
+                return chatOutRequst;
+            }
+
+            JSONObject choiceJson = choices.getJSONObject(0);
+            String message = choiceJson.getString("message");
+            if (message == null) {
+                log.info("message is null");
+                // 如果消息为空，设置默认值并返回
+                return chatOutRequst;
+            }
+
+            JSONObject messageJson = JSON.parseObject(message);
+            String content = messageJson.getString("content");
+            if (content == null || content.toString().isEmpty()) {
+                log.info("content is null or empty");
+                // 如果内容为空，设置默认值并返回
+                return chatOutRequst;
+            }
+
+            // 解析content并填充ChatOutRequst对象
+            JSONObject contentJson = JSON.parseObject(content);
+            String requestType = contentJson.getString("requestType");
+            String userCheckFlag = contentJson.getString("userCheckFlag");
+            String requestData = contentJson.getString("requestData");
+
             chatOutRequst.setRequestType(requestType);
             chatOutRequst.setUserCheckFlag(userCheckFlag);
             chatOutRequst.setRequestData(requestData);
+
         } catch (Exception e) {
-            // 处理解析异常
+            log.error("Failed to parse response", e);
+            // 设置默认值以应对异常情况
             chatOutRequst.setRequestType(String.valueOf(3));
             chatOutRequst.setUserCheckFlag(String.valueOf(0));
-            chatOutRequst.setRequestData(content.toString());
-        } finally {
-            return chatOutRequst;
+            chatOutRequst.setRequestData("");
         }
+
+        return chatOutRequst;
     }
 
     /**
