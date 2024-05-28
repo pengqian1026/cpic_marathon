@@ -120,8 +120,14 @@ public class PromptServiceImpl implements PromptService {
         return extractDataFromResponse(response.toString());
     }
 
+    /**
+     * 从响应字符串中提取数据，填充到ChatOutRequest对象中。
+     *
+     * @param response 原始响应字符串
+     * @return ChatOutRequest对象，包含了从响应中解析出的数据
+     */
     public ChatOutRequst extractDataFromResponse(String response) {
-        // 初始化ChatOutRequst对象
+        // 初始化ChatOutRequest对象
         ChatOutRequst chatOutRequst = new ChatOutRequst();
 
         try {
