@@ -32,15 +32,24 @@ public class RuleDeployServiceImpl implements RuleDeployService {
     @Autowired
     private MiaRuleInfoMapper miaRuleInfoMapper;
 
+    /**
+     * 执行规则分析并返回分析数据。
+     *
+     * @param miaQuery 包含查询条件的对象，用于指定规则查询的参数。
+     * @param request  包含用户信息和请求参数的对象，用于指定规则的额外上下文信息。
+     * @return 返回一个包含分析数据、规则ID、CNVS ID和成本总和的AnalysisDataVO对象。
+     */
     @Override
     public AnalysisDataVO executeRule(MiaQuery miaQuery, MiaPromptRequest request) {
-        //List<MiaErrData> targetRecords = miaMapper.select(miaQuery);
-
+        // 根据规则查询条件获取目标记录
         List<MiaHistoryInfoPO> targetRecords = miaHistoryInfoMapper.getErrDataByRule(miaQuery);
 
+        // 生成唯一的规则代码
         String ruleCode = StdCodeUtil.generateCode();
-        if(!CollectionUtils.isEmpty(targetRecords)){
+        // 如果目标记录非空，则插入一条新的规则信息
+        if (!CollectionUtils.isEmpty(targetRecords)) {
             MiaRuleInfoPO miaRuleInfoPO = new MiaRuleInfoPO();
+            // 设置规则信息
             miaRuleInfoPO.setRuleCode(ruleCode);
             miaRuleInfoPO.setRuleName(miaQuery.getItemNameHosp1());
             miaRuleInfoPO.setRuleType(miaQuery.getRule());
@@ -49,14 +58,17 @@ public class RuleDeployServiceImpl implements RuleDeployService {
             miaRuleInfoPO.setItemnamehosp2(miaQuery.getItemNameHosp2());
             miaRuleInfoPO.setScope((Integer.valueOf(miaQuery.getScope())));
             miaRuleInfoPO.setNum(Long.getLong(miaQuery.getNum()));
+            // 插入规则信息到数据库
             miaRuleInfoMapper.insert(miaRuleInfoPO);
         }
 
+        // 构建并返回分析数据视图对象
         AnalysisDataVO analysisDataVO = new AnalysisDataVO();
-        analysisDataVO.setMiaErrDatas(targetRecords);
-        analysisDataVO.setRuleId(ruleCode);
-        analysisDataVO.setCnsvId(request.getCnvsId());
-        analysisDataVO.setCost_sum(128.00);
+        analysisDataVO.setMiaErrDatas(targetRecords); // 设置错误数据列表
+        analysisDataVO.setRuleId(ruleCode); // 设置规则ID
+        analysisDataVO.setCnsvId(request.getCnvsId()); // 设置CNVS ID
+        analysisDataVO.setCost_sum(128.00); // 设置成本总和
         return analysisDataVO;
     }
+
 }
