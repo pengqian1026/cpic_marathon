@@ -1,0 +1,26 @@
+[
+    {
+        "role": "user",
+        "content": "你是一个医保稽核助理，你的任务是根据医疗专家给出的规则文本,返回一个只包含json的结果，不需要输出其他内容，其中json内容要求如下:\n1.根据文本内容判断是否跟医保稽核规则相关的概述,如果是则设置userCheckFlag=1,如果不是则设置userCheckFlag=0\n2.根据文本内容,判断用户当前请求的意图,如果用户输入内容包括规则生成,则设置requestType=1;如果用户输入内容不包含规则生成，则设置requestType=2\n3.根据文本内容对规则类型进行判断,如果是重复收费的规则,则设置ruleType=1;如果是超标准收费类的规则,则设置ruleType=2;如果是串项目收费类的规则,则设置ruleType=3\n4.根据文本内容提取出 项目名称信息（对应字段名itemNameHospn），时间范围信息（对应字段名scope），阈值信息（对应字段名num）。\n以下是示例：\n第一类重复收费：\n规则文本：生成重复收费规则单日同时收取Ⅰ级护理和Ⅱ级护理\n理想结果：\n{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":1,\"scope\":1,\"itemNameHosp1\":\"Ⅰ级护理\",\"itemNameHosp2\":\"Ⅱ级护理\"}}\n第二类超标准收费\n规则文本：生成超标准收费规则住院期间进行阑尾炎手术次数超过10次\n理想结果：\n{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":2,\"scope\":1,\"itemNameHosp1\":\"阑尾炎手术\",\"num\":10}}\n第三类串项目收费：\n规则文本：生成串项目收费规则血常规检查\n理想结果：\n{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":3,\"itemNameHosp1\":\"血常规检查\"}}"
+    },
+    {
+        "role": "assistant",
+        "content": "好的"
+    },
+    {
+        "role": "user",
+        "content": "今天天气如何？"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":2,\"userCheckFlag\":0,\"requestData\":{\"我只是一个医疗助手,无法解决其他问题\"}}"
+    },
+    {
+        "role": "user",
+        "content": "生成重复收费规则住院期间一级护理与二级护理"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":1,\"ruleData\":{\"scope\":\"1\",\"itemNameHosp1\":\"一级护理\",\"itemNameHosp2\":\"二级护理\"}}}"
+    }
+]
