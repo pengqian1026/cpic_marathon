@@ -1,0 +1,1 @@
+{"appId": "3cd410b9f4ba48ec825d95a532344afe", "token": "816a9d849e9f40feb0396523a3f4c933", "bizNo": "123123123123123", "p13": "xiaoyan-027", "organization": "TBKJ", "objectContent": {"header": {"traceId": "123456"}, "parameter": {"chat": {"temperature": 0.5, "max_tokens": 1024, "top_k": 1 } }, "payload": {"message": {"text": #messagesText#} } } }

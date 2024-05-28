@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cpic.mia.mapper.MiaRuleInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.cpic.mia.domain.MiaRuleInfoPO">
+            <id property="keyId" column="key_id" jdbcType="BIGINT"/>
+            <result property="hospitalId" column="hospital_id" jdbcType="VARCHAR"/>
+            <result property="ruleCode" column="rule_code" jdbcType="VARCHAR"/>
+            <result property="ruleName" column="rule_name" jdbcType="VARCHAR"/>
+            <result property="ruleType" column="rule_type" jdbcType="VARCHAR"/>
+            <result property="scope" column="scope" jdbcType="TINYINT"/>
+            <result property="itemnamehosp1" column="itemNameHosp1" jdbcType="VARCHAR"/>
+            <result property="itemnamehosp2" column="itemNameHosp2" jdbcType="VARCHAR"/>
+            <result property="num" column="num" jdbcType="BIGINT"/>
+            <result property="createTm" column="create_tm" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        key_id,hospital_id,rule_code,
+        rule_name,rule_type,scope,
+        itemNameHosp1,itemNameHosp2,num
+    </sql>
+
+    <select id="getRuleInfoByName">
+        select
+        *
+        from mia_rule_info
+        where rule_name like CONCAT('%',#{ruleName},'%');
+    </select>
+
+</mapper>
