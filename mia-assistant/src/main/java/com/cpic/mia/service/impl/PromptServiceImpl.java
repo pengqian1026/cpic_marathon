@@ -217,7 +217,7 @@ public class PromptServiceImpl implements PromptService {
 
     public String generateFinalContent(MiaPromptRequest request, String tmpRequestPath) throws Exception {
         //历史对话信息组装;
-        JSONArray historyCnsv = getHisPromptsByCnsvId(request.getCnvsId());
+        JSONArray historyCnsv = getHisPromptsByCnsvId(request.getCnsvId());
 
         if (ObjectUtils.isEmpty(historyCnsv)) {
             historyCnsv = new JSONArray();

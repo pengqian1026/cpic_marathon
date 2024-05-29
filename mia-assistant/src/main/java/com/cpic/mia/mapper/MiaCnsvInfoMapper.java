@@ -1,7 +1,10 @@
 package com.cpic.mia.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cpic.mia.domain.MiaCnsvHistoryVO;
 import com.cpic.mia.domain.MiaCnsvInfoPO;
+import com.cpic.mia.domain.MiaHistoryInfoPO;
+import com.cpic.mia.domain.request.LogQueryRequest;
 
 import java.util.List;
 
@@ -15,4 +18,7 @@ public interface MiaCnsvInfoMapper extends BaseMapper<MiaCnsvInfoPO> {
 
     List<MiaCnsvInfoPO> getHistoryCnsv(String cnsvId);
 
+    List<String> getRelatedCnsvId(LogQueryRequest logQueryRequest);
+
+    List<MiaCnsvHistoryVO> getHistoryCnsvInfo(List<String> cnsvList);
 }

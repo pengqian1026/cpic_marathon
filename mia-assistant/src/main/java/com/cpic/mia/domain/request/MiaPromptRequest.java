@@ -6,6 +6,6 @@ import lombok.Data;
 public class MiaPromptRequest {
     public String appToke;
     public String userId;
-    public String cnvsId;
+    public String cnsvId;
     public String question;
 }

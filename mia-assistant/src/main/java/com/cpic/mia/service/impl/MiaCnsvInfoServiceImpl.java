@@ -1,15 +1,26 @@
 package com.cpic.mia.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cpic.mia.domain.AnalysisDataVO;
+import com.cpic.mia.domain.MiaCnsvHistoryVO;
 import com.cpic.mia.domain.MiaCnsvInfoPO;
 import com.cpic.mia.domain.request.ChatOutRequst;
+import com.cpic.mia.domain.request.LogQueryRequest;
 import com.cpic.mia.domain.request.MiaPromptRequest;
 import com.cpic.mia.service.MiaCnsvInfoService;
 import com.cpic.mia.mapper.MiaCnsvInfoMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * @author pengqian-012
@@ -32,25 +43,39 @@ public class MiaCnsvInfoServiceImpl extends ServiceImpl<MiaCnsvInfoMapper, MiaCn
      * @param content          额外的内容信息，以字符串形式存储，提供给保存功能使用。
      */
     @Override
-    public void saveUserCnsvInfo(MiaPromptRequest miaPromptRequest, ChatOutRequst result, Object content) {
+    public void saveUserCnsvInfo(MiaPromptRequest miaPromptRequest, ChatOutRequst result, AnalysisDataVO content) throws JsonProcessingException {
         // 存储用户请求信息
         MiaCnsvInfoPO request = new MiaCnsvInfoPO();
-        request.setCnsvId(miaPromptRequest.getCnvsId());
+        request.setCnsvId(miaPromptRequest.getCnsvId());
         request.setCnsvSeqNo(1); // 设置序列号，用户信息为1
         request.setRole("user"); // 设置角色为用户
         request.setQuestion(miaPromptRequest.getQuestion()); // 设置用户提出的问题
         request.setAnswer(result.getRequestData()); // 设置对应的回答内容
-        request.setContent(content.toString()); // 设置额外的内容信息
+        ObjectMapper mapper = new ObjectMapper();
+        String finalContent = mapper.writeValueAsString(content);
+        request.setContent(finalContent); // 设置额外的内容信息
         miaCnsvInfoMapper.insert(request); // 插入到数据库
 
         // 存储机器人回答信息
         MiaCnsvInfoPO answer = new MiaCnsvInfoPO();
-        answer.setCnsvId(miaPromptRequest.getCnvsId()); // 使用相同的对话ID
+        answer.setCnsvId(miaPromptRequest.getCnsvId()); // 使用相同的对话ID
         answer.setCnsvSeqNo(2); // 设置序列号，回答信息为2
         answer.setRole("assistant"); // 设置角色为助手
         answer.setQuestion(miaPromptRequest.getQuestion()); // 设置同样的问题，便于配对
         answer.setAnswer(result.getRequestData()); // 设置机器人的回答内容
-        answer.setContent(content.toString()); // 同样存储额外的内容信息
+        answer.setContent(finalContent); // 同样存储额外的内容信息
         miaCnsvInfoMapper.insert(answer); // 插入到数据库中
+    }
+
+    @Override
+    public List<MiaCnsvHistoryVO> getRelatedCnsvInfo(LogQueryRequest logQueryRequest) {
+        List<String> relatedCnsvId = miaCnsvInfoMapper.getRelatedCnsvId(logQueryRequest);
+        if(CollectionUtils.isEmpty(relatedCnsvId)){
+            return null;
+        }
+
+        List<MiaCnsvHistoryVO> historyCnsvInfo = miaCnsvInfoMapper.getHistoryCnsvInfo(relatedCnsvId);
+
+        return historyCnsvInfo;
     }
 }

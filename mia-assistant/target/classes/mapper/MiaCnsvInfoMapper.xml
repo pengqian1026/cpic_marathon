@@ -15,6 +15,22 @@
             <result property="createTm" column="create_tm" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+
+    <resultMap id="HistoryResultMap" type="com.cpic.mia.domain.MiaCnsvHistoryVO">
+        <result property="cnsvId" column="k_cnsv_id" jdbcType="VARCHAR"/>
+        <collection property="miaCnsvInfoPOS" ofType="com.cpic.mia.domain.MiaCnsvInfoPO" javaType="ArrayList">
+            <id property="keyId" column="key_id" jdbcType="BIGINT"/>
+            <result property="cnsvId" column="cnsv_id" jdbcType="VARCHAR"/>
+            <result property="cnsvSeqNo" column="cnsv_seq_no" jdbcType="INTEGER"/>
+            <result property="role" column="role" jdbcType="VARCHAR"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="question" column="question" jdbcType="VARCHAR"/>
+            <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="createTm" column="create_tm" jdbcType="TIMESTAMP"/>
+        </collection>
+
+    </resultMap>
+
     <sql id="Base_Column_List">
         key_id,cnsv_id,cnsv_seq_no,
         role,content,question,
@@ -26,5 +42,41 @@
         from mia_cnsv_info
         where cnsv_id = #{cnsvId}
         order by create_tm
+    </select>
+
+    <select id="getRelatedCnsvId" resultType="string">
+        select cnsv_id
+        from ( select cnsv_id,Max(create_tm) from mia_cnsv_info
+        where 1=1
+        <if test="cnsvId != null">
+            and cnsv_id = #{cnsvId}
+        </if>
+        <if test="keyWord != null">
+            and (
+            question like CONCAT('%',#{keyWord},'%')
+            or
+            answer like CONCAT('%',#{keyWord},'%')
+            )
+        </if>
+        group by cnsv_id order by create_tm desc limit 10) as t1
+    </select>
+
+    <select id="getHistoryCnsvInfo" resultMap="HistoryResultMap" parameterType="string">
+        select
+        cnsv_id as k_cnsv_id
+        ,key_id
+        ,cnsv_id
+        ,cnsv_seq_no
+        ,role
+        ,content
+        ,question
+        ,answer
+        ,create_tm
+        from mia_cnsv_info
+        where role = 'user' and cnsv_id in
+        <foreach collection="cnsvList" item="cnsvId" open="(" separator="," close=")">
+            #{cnsvId}
+        </foreach>
+        order by cnsv_id,create_tm
     </select>
 </mapper>

@@ -1,10 +1,14 @@
 package com.cpic.mia.domain;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.sql.Timestamp;
 
 import lombok.Data;
@@ -59,5 +63,7 @@ public class MiaCnsvInfoPO implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+
 
 }

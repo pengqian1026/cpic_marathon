@@ -21,6 +21,6 @@
     },
     {
         "role": "assistant",
-        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":1,\"ruleData\":{\"scope\":\"1\",\"itemNameHosp1\":\"一级护理\",\"itemNameHosp2\":\"二级护理\"}}}"
+        "content": "{\"requestType\":1,\"userCheckFlag\":1,\"requestData\":{\"ruleType\":1,\"scope\":\"1\",\"itemNameHosp1\":\"一级护理\",\"itemNameHosp2\":\"二级护理\"}}"
     }
 ]

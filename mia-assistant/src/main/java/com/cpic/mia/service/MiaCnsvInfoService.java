@@ -3,8 +3,13 @@ package com.cpic.mia.service;
 import com.alibaba.fastjson.JSONObject;
 import com.cpic.mia.domain.AnalysisDataVO;
 
+import com.cpic.mia.domain.MiaCnsvHistoryVO;
 import com.cpic.mia.domain.request.ChatOutRequst;
+import com.cpic.mia.domain.request.LogQueryRequest;
 import com.cpic.mia.domain.request.MiaPromptRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.util.List;
 
 
 /**
@@ -14,6 +19,9 @@ import com.cpic.mia.domain.request.MiaPromptRequest;
 */
 public interface MiaCnsvInfoService {
 
-    void saveUserCnsvInfo(MiaPromptRequest request, ChatOutRequst result, Object content);
+    void saveUserCnsvInfo(MiaPromptRequest request, ChatOutRequst result, AnalysisDataVO content) throws JsonProcessingException;
+
+
+    List<MiaCnsvHistoryVO> getRelatedCnsvInfo(LogQueryRequest logQueryRequest);
 
 }

@@ -86,7 +86,7 @@ public class RuleDeployServiceImpl implements RuleDeployService {
         analysisDataVO.setDataSchema(schemaList);
 
         analysisDataVO.setRuleId(ruleCode);
-        analysisDataVO.setCnsvId(request.getCnvsId());
+        analysisDataVO.setCnsvId(request.getCnsvId());
 
         Integer recordCnt = targetRecords.size();
         String summary = "规则("+ruleCode+")已生成,命中阳性记录数("+recordCnt+")条,阳性数据总金额合计("+amount+")元";

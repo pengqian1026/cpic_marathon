@@ -3,10 +3,12 @@ package com.cpic.mia.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cpic.mia.domain.AnalysisDataVO;
+import com.cpic.mia.domain.MiaCnsvHistoryVO;
 import com.cpic.mia.domain.MiaErrData;
 import com.cpic.mia.domain.MiaQuery;
 import com.cpic.mia.domain.request.BigDataSqlCallback;
 import com.cpic.mia.domain.request.ChatOutRequst;
+import com.cpic.mia.domain.request.LogQueryRequest;
 import com.cpic.mia.domain.request.MiaPromptRequest;
 import com.cpic.mia.service.MiaCnsvInfoService;
 import com.cpic.mia.service.PromptService;
@@ -18,11 +20,15 @@ import com.cpic.mia.utils.RestResponseCode;
 import com.cpic.mia.utils.StdCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sun.rmi.runtime.Log;
+
+import java.util.List;
 
 
 @Slf4j
@@ -38,11 +44,40 @@ public class PromptController {
 
     @Autowired
     RuleDeployService ruleDeployService;
+
+    /**
+     * 日志查询-显示会话第一条
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/logQuery")
+    public CommonResult logQuery() {
+        LogQueryRequest logQueryRequest = new LogQueryRequest();
+        List<MiaCnsvHistoryVO>  miaCnsvHistoryVOS =  miaCnsvInfoService.getRelatedCnsvInfo(logQueryRequest);
+        if(!CollectionUtils.isEmpty(miaCnsvHistoryVOS)){
+            CommonResult res = ResponseUtil.success();
+            res.setCode(RestResponseCode.SUCCESS.getCode());
+            res.setData(miaCnsvHistoryVOS);
+            return res;
+        }else {
+            CommonResult res = ResponseUtil.success();
+            res.setCode(RestResponseCode.FAIL.getCode());
+            return res;
+        }
+    }
+
+    /**
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/prompt")
     public CommonResult pormpt(@RequestBody MiaPromptRequest request) throws Exception {
-        if(ObjectUtils.isEmpty(request.getCnvsId())){
+        if(ObjectUtils.isEmpty(request.getCnsvId())){
             String cnsvId = StdCodeUtil.generateCode();
-            request.setCnvsId(cnsvId);
+            request.setCnsvId(cnsvId);
         }
         //获取到大模型出参
         ChatOutRequst result = promptService.promptResult(request);
@@ -75,7 +110,7 @@ public class PromptController {
         AnalysisDataVO analysisDataVO = new AnalysisDataVO();
         String content = result.getRequestData() + "\n提示(当前问题可能与医保稽核无关,无关内容提问会影响稽核规则准确性);";
         analysisDataVO.setSummary(content);
-        analysisDataVO.setCnsvId(request.getCnvsId());
+        analysisDataVO.setCnsvId(request.getCnsvId());
 
         String suggest = FileUtil.loadConfig("tmp/不相关提示.txt");
         String[] suggestList = suggest.split(",");
@@ -91,25 +126,25 @@ public class PromptController {
         JSONObject requestData = JSONObject.parseObject(requestDataStr);
 
         String ruleType = requestData.getString("ruleType");
-        JSONObject ruleData = requestData.getJSONObject("ruleData");
+        //JSONObject ruleData = requestData.getJSONObject("ruleData");
         if(ruleType.equals("1")){
-            String scope = ruleData.getString("scope");
-            String itemNameHosp1 = ruleData.getString("itemNameHosp1");
-            String itemNameHosp2 = ruleData.getString("itemNameHosp2");
+            String scope = requestData.getString("scope");
+            String itemNameHosp1 = requestData.getString("itemNameHosp1");
+            String itemNameHosp2 = requestData.getString("itemNameHosp2");
             miaQuery.setRule(String.valueOf(1));
             miaQuery.setScope(scope);
             miaQuery.setItemNameHosp1(itemNameHosp1);
             miaQuery.setItemNameHosp2(itemNameHosp2);
         }else if(ruleType.equals("2")){
-            String scope = ruleData.getString("scope");
-            String itemNameHosp1 = ruleData.getString("itemNameHosp1");
-            Object num = ruleData.get("num");
+            String scope = requestData.getString("scope");
+            String itemNameHosp1 = requestData.getString("itemNameHosp1");
+            Object num = requestData.get("num");
             miaQuery.setRule(String.valueOf(2));
             miaQuery.setScope(scope);
             miaQuery.setItemNameHosp1(itemNameHosp1);
             miaQuery.setNum(num.toString());
         }else if(ruleType.equals("3")){
-            String itemNameHosp1 = ruleData.getString("itemNameHosp1");
+            String itemNameHosp1 = requestData.getString("itemNameHosp1");
             miaQuery.setRule(String.valueOf(3));
             miaQuery.setItemNameHosp1(itemNameHosp1);
         }
