@@ -105,4 +105,10 @@
         his_id,
         item_name_hosp
     </select>
+
+
+    <select id="getSumCost" resultType="double">
+
+
+    </select>
 </mapper>

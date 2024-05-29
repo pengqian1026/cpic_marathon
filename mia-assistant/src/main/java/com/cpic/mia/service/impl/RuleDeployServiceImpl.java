@@ -1,5 +1,7 @@
 package com.cpic.mia.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.cpic.mia.domain.AnalysisDataVO;
 import com.cpic.mia.domain.MiaErrData;
 import com.cpic.mia.domain.MiaHistoryInfoPO;
@@ -10,12 +12,19 @@ import com.cpic.mia.mapper.MiaHistoryInfoMapper;
 import com.cpic.mia.mapper.MiaMapper;
 import com.cpic.mia.mapper.MiaRuleInfoMapper;
 import com.cpic.mia.service.RuleDeployService;
+import com.cpic.mia.utils.FileUtil;
 import com.cpic.mia.utils.StdCodeUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author pengqian-012
@@ -32,24 +41,25 @@ public class RuleDeployServiceImpl implements RuleDeployService {
     @Autowired
     private MiaRuleInfoMapper miaRuleInfoMapper;
 
-    /**
-     * 执行规则分析并返回分析数据。
-     *
-     * @param miaQuery 包含查询条件的对象，用于指定规则查询的参数。
-     * @param request  包含用户信息和请求参数的对象，用于指定规则的额外上下文信息。
-     * @return 返回一个包含分析数据、规则ID、CNVS ID和成本总和的AnalysisDataVO对象。
-     */
     @Override
-    public AnalysisDataVO executeRule(MiaQuery miaQuery, MiaPromptRequest request) {
-        // 根据规则查询条件获取目标记录
+    public AnalysisDataVO executeRule(MiaQuery miaQuery, MiaPromptRequest request) throws Exception {
+        //List<MiaErrData> targetRecords = miaMapper.select(miaQuery);
+
         List<MiaHistoryInfoPO> targetRecords = miaHistoryInfoMapper.getErrDataByRule(miaQuery);
 
-        // 生成唯一的规则代码
+        //计算总金额
+        //Double amount = miaHistoryInfoMapper.getSumCost(miaQuery);
+        Double amount = 0.0;
+        if(!CollectionUtils.isEmpty(targetRecords)){
+            for(MiaHistoryInfoPO miaHistoryInfoPO:targetRecords){
+                double cost = Double.parseDouble(miaHistoryInfoPO.getCostSum());
+                amount += cost;
+            }
+        }
+
         String ruleCode = StdCodeUtil.generateCode();
-        // 如果目标记录非空，则插入一条新的规则信息
-        if (!CollectionUtils.isEmpty(targetRecords)) {
+        if(!CollectionUtils.isEmpty(targetRecords)){
             MiaRuleInfoPO miaRuleInfoPO = new MiaRuleInfoPO();
-            // 设置规则信息
             miaRuleInfoPO.setRuleCode(ruleCode);
             miaRuleInfoPO.setRuleName(miaQuery.getItemNameHosp1());
             miaRuleInfoPO.setRuleType(miaQuery.getRule());
@@ -58,17 +68,39 @@ public class RuleDeployServiceImpl implements RuleDeployService {
             miaRuleInfoPO.setItemnamehosp2(miaQuery.getItemNameHosp2());
             miaRuleInfoPO.setScope((Integer.valueOf(miaQuery.getScope())));
             miaRuleInfoPO.setNum(Long.getLong(miaQuery.getNum()));
-            // 插入规则信息到数据库
             miaRuleInfoMapper.insert(miaRuleInfoPO);
         }
 
-        // 构建并返回分析数据视图对象
+
         AnalysisDataVO analysisDataVO = new AnalysisDataVO();
-        analysisDataVO.setMiaErrDatas(targetRecords); // 设置错误数据列表
-        analysisDataVO.setRuleId(ruleCode); // 设置规则ID
-        analysisDataVO.setCnsvId(request.getCnvsId()); // 设置CNVS ID
-        analysisDataVO.setCost_sum(128.00); // 设置成本总和
+        List<MiaHistoryInfoPO> simpleData = targetRecords.size() <= 10 ? targetRecords : targetRecords.subList(0, 10);
+        ArrayList<Map<String,Object>> sampleResult = new ArrayList<>();
+        for(MiaHistoryInfoPO miaHistoryInfoPO:simpleData){
+            Map<String, Object> sample = convertBeanToMap(miaHistoryInfoPO);
+            sampleResult.add(sample);
+        }
+        analysisDataVO.setReplyData(sampleResult);
+        String schema = FileUtil.loadConfig("tmp/MiaHistoryDataSchema.json");
+        ObjectMapper schemaMapper = new ObjectMapper();
+        List<Map<String, Object>> schemaList = schemaMapper.readValue(schema, List.class);
+        analysisDataVO.setDataSchema(schemaList);
+
+        analysisDataVO.setRuleId(ruleCode);
+        analysisDataVO.setCnsvId(request.getCnvsId());
+
+        Integer recordCnt = targetRecords.size();
+        String summary = "规则("+ruleCode+")已生成,命中阳性记录数("+recordCnt+")条,阳性数据总金额合计("+amount+")元";
+        analysisDataVO.setSummary(summary);
         return analysisDataVO;
     }
 
+    public static Map<String,Object> convertBeanToMap(Object bean) throws IllegalArgumentException, IllegalAccessException{
+        Field[] fields = bean.getClass().getDeclaredFields();
+        HashMap<String,Object> data = new HashMap<String,Object>();
+        for(Field field : fields){
+            field.setAccessible(true);
+            data.put(field.getName(), field.get(bean));
+        }
+        return data;
+    }
 }

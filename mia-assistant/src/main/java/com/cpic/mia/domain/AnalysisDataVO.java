@@ -3,6 +3,7 @@ package com.cpic.mia.domain;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author pengqian-012
@@ -14,6 +15,8 @@ import java.util.List;
 public class AnalysisDataVO {
     private String cnsvId;
     private String ruleId;
-    private List<MiaHistoryInfoPO> miaErrDatas;
-    private Double cost_sum;
+    private List<Map<String,Object>> dataSchema;
+    private List<Map<String,Object>> replyData;
+    private String[] suggestList;
+    private String summary;
 }

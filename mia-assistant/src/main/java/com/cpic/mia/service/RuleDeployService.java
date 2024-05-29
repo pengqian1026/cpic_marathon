@@ -17,5 +17,5 @@ import java.util.List;
 @Service
 public interface RuleDeployService {
 
-    AnalysisDataVO executeRule(MiaQuery miaQuery, MiaPromptRequest request);
+    AnalysisDataVO executeRule(MiaQuery miaQuery, MiaPromptRequest request) throws Exception;
 }
